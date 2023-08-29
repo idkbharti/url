@@ -1,9 +1,10 @@
 const express = require("express");
 const {connectToDb}=require("./connect");
 const multer = require('multer');
+const fetch = require('node-fetch');
+const { Dropbox } = require('dropbox');
 // const urlRoute = require("./routes/urlRoutes")
 // const URL = require("./models/urlSchema")
-// const { createCanvas } = require('canvas');
 const QRCode = require('qrcode-svg');
 const fs = require('fs');
 const path = require('path');
@@ -20,14 +21,7 @@ const PORT=8001;
 //     api_secret: 'U7kctLgzbL2Uj3dSRWO8Su3qTX0' 
 //   });
 
-// Google Drive API setup
-// const credentials = require('./path/to/your/client_secret.json'); // Path to your downloaded client secret JSON file
-// const oauth2Client = new google.auth.OAuth2(
-//     credentials.installed.client_id,
-//     credentials.installed.client_secret,
-//     credentials.installed.redirect_uris[0]
-// );
-// const drive = google.drive({ version: 'v3', auth: oauth2Client });
+
 
 connectToDb("mongodb+srv://idkbharti:AAxZum0QBueMaehp@cluster0.i1zihkv.mongodb.net/").then(()=>console.log("sucessfully connect to database"));
 
@@ -38,40 +32,43 @@ app.use(bodyParser.json());
 
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
-// app.use("/url",urlRoute)
 
-// Handle file upload and return QR code with URL
-// app.post('/uploadAndGenerateQR', async (req, res) => {
-//     const { file } = req.body;
+const dropbox = new Dropbox({ accessToken: 'dqxjy40mv6lt51x' });
 
-//     // Upload the file to Google Drive
-//     const driveResponse = await drive.files.create({
-//         requestBody: {
-//             name: file.originalname,
-//             mimeType: file.mimetype,
-//             parents: ['YOUR_FOLDER_ID'] // Set the folder ID where you want to upload the file
-//         },
-//         media: {
-//             mimeType: file.mimetype,
-//             body: file.buffer
-//         }
-//     });
+app.post('/upload', upload.single('file'), async (req, res) => {
+    try {
+        if (!req.file) {
+            return res.status(400).json({ message: 'File not provided' });
+        }
 
-//     // Generate QR code with the file URL
-//     const fileUrl = driveResponse.data.webViewLink; // You might need to adjust this based on the Drive API response
-//     const qr = new QRCode({
-//         content: fileUrl,
-//         padding: 4,
-//         width: 300,
-//         height: 300,
-//         color: '#000000',
-//         background: '#ffffff'
-//     });
+        // Upload the file to Dropbox
+        const response = await dropbox.filesUpload({
+            path: '/' + req.file.originalname,
+            contents: req.file.buffer,
+        });
 
-//     // Send the QR code SVG as response
-//     res.setHeader('Content-Type', 'image/svg+xml');
-//     res.send(qr.svg());
-// });
+        // Get the shared link
+        const sharedLink = await dropbox.sharingCreateSharedLinkWithSettings({
+            path: response.path_display,
+        });
+
+        // Generate QR code SVG from the shared link
+        const qr = new QRCode({
+            content: sharedLink.url,
+            padding: 4,
+            width: 400,
+            height: 400,
+        });
+
+        // Send the QR code SVG as response
+        res.setHeader('Content-Type', 'image/svg+xml');
+        res.send(qr.svg());
+    } catch (error) {
+        console.error('Error:', error);
+        res.status(500).json({ message: 'An error occurred' });
+    }
+})
+
 
 app.post('/generateQR', 
 // upload.single('file'),
@@ -125,6 +122,9 @@ app.post('/generateQR',
     res.setHeader('Content-Type', 'image/svg+xml');
     res.send(qr.svg());
 });
+
+
+
   
 
 app.listen(PORT,()=>console.log(`server running on port ${PORT}`));
