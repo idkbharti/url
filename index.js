@@ -64,7 +64,7 @@ const upload = multer();
         }
     });
     app.get("/",(req,res)=>{
-        res.send({message:"hi working Perfectly"})
+        res.send({message:"hii from server"})
     })
 
 app.listen(PORT,()=>console.log(`server running on port ${PORT}`));
