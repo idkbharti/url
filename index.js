@@ -63,6 +63,9 @@ const upload = multer();
             res.status(500).json({ message: 'An error occurred' });
         }
     });
+    app.get("/",(req,res)=>{
+        res.send({message:"hi working Perfectly"})
+    })
 
 app.listen(PORT,()=>console.log(`server running on port ${PORT}`));
 
