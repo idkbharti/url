@@ -1,4 +1,3 @@
-Certainly! Here are simplified API documentation examples for the routes and endpoints you described using simple language, including API calls and response examples.
 
 ### Create a QR Code
 
