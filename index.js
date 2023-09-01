@@ -12,22 +12,29 @@ const path = require('path');
 const qrRoute = require("./routes/qrRoutes")
 
 require('dotenv').config()
+const app=express();
+app.use(express.json());
+app.use(cors())
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json());
+
+const PORT=8001;
+connectToDb(process.env.DB_URL).then(()=>console.log("sucessfully connect to database"));
+app.listen(PORT,()=>console.log(`server running on port ${PORT}`));
+
+
+
+
 cloudinary.config({ 
     cloud_name: process.env.CLOUD_NAME, 
     api_key: process.env.API_KEY, 
     api_secret: process.env.API_SECRET, 
   });
 
-const app=express();
-const PORT=8001;
 
 
-connectToDb(process.env.DB_URL).then(()=>console.log("sucessfully connect to database"));
 
-app.use(express.json());
-app.use(cors())
-app.use(bodyParser.urlencoded({ extended: true }));
-app.use(bodyParser.json());
+
 
 app.use('/url',urlRoute);
 app.use('/qr',qrRoute);
@@ -67,5 +74,4 @@ const upload = multer();
         res.send({message:"hii from server"})
     })
 
-app.listen(PORT,()=>console.log(`server running on port ${PORT}`));
 
