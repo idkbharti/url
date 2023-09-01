@@ -20,10 +20,6 @@ app.use(bodyParser.json());
 
 const PORT=process.env.PORT || 8003;
 connectToDb(process.env.DB_URL).then(()=>console.log("sucessfully connect to database"));
-app.listen(PORT,()=>console.log(`server running on port ${PORT}`));
-
-
-
 
 cloudinary.config({ 
     cloud_name: process.env.CLOUD_NAME, 
@@ -31,18 +27,13 @@ cloudinary.config({
     api_secret: process.env.API_SECRET, 
   });
 
-
-
-
-
-
 app.use('/url',urlRoute);
 app.use('/qr',qrRoute);
 
 const storage = multer.memoryStorage();
 const upload = multer();
 
-    app.post('/upload', upload.single('file'), async (req, res) => {
+app.post('/upload', upload.single('file'), async (req, res) => {
         try {
             if (!req.file) {
                 return res.status(400).json({ message: 'File not provided' });
@@ -70,8 +61,11 @@ const upload = multer();
             res.status(500).json({ message: 'An error occurred' });
         }
     });
-    app.get("/",(req,res)=>{
-        res.send({message:"hii from server"})
-    })
+    app.get('/', (req, res) => {
+        res.sendFile(__dirname + '/public/docu.html');
+      });
+
+app.listen(PORT,()=>console.log(`server running on port ${PORT}`));
+
 
 
