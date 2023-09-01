@@ -18,7 +18,7 @@ app.use(cors())
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
-const PORT=8001;
+const PORT=process.env.PORT || 8003;
 connectToDb(process.env.DB_URL).then(()=>console.log("sucessfully connect to database"));
 app.listen(PORT,()=>console.log(`server running on port ${PORT}`));
 
