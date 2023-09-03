@@ -4,7 +4,7 @@ const { handleQRGenerator,handleUploadqrGenerator } = require("../controllers/qr
 
 const router = express.Router()
 router.post("/",handleQRGenerator)
-router.post("/upload",handleUploadqrGenerator)
+// router.post("/upload",handleUploadqrGenerator)
 
 
 
