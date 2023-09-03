@@ -1,5 +1,11 @@
 const QRCode = require('qrcode-svg');
 
+
+// const cf = new cloudflare({
+//     email: 'your-email@example.com', // Your Cloudflare email
+//     key: 'your-api-key', // Your Cloudflare API key
+//   });
+
 async function handleQRGenerator(req,res){
     const { type, content } = req.body;
 
@@ -43,8 +49,31 @@ async function handleQRGenerator(req,res){
 
 }
 
+async function handleUploadqrGenerator(req,res){
+ try {
+      // Upload the file to Cloudflare
+      const { buffer, originalname } = req.file;
+      const uploadResponse = await cf.upload(buffer, { filename: originalname });
+  
+      // Get the Cloudflare URL of the uploaded file
+      const cloudflareUrl = uploadResponse.url;
+  
+      // Generate a QR code SVG from the Cloudflare URL
+      const qrSvg = qr.imageSync(cloudflareUrl, { type: 'svg' });
+  
+      // Send the QR code SVG to the user as a response
+      res.set('Content-Type', 'image/svg+xml');
+      res.send(qrSvg);
+    } catch (error) {
+      console.error(error);
+      res.status(500).send('Internal Server Error');
+    }
+  
+}
+
 
 
 module.exports={
-    handleQRGenerator
+    handleQRGenerator,
+    handleUploadqrGenerator
 }
