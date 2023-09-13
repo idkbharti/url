@@ -1,10 +1,6 @@
 const QRCode = require('qrcode-svg');
+const s3 = require('../aws-config');
 
-
-// const cf = new cloudflare({
-//     email: 'your-email@example.com', // Your Cloudflare email
-//     key: 'your-api-key', // Your Cloudflare API key
-//   });
 
 async function handleQRGenerator(req,res){
     const { type, content } = req.body;
@@ -50,24 +46,42 @@ async function handleQRGenerator(req,res){
 }
 
 async function handleUploadqrGenerator(req,res){
- try {
-      // Upload the file to Cloudflare
-      const { buffer, originalname } = req.file;
-      const uploadResponse = await cf.upload(buffer, { filename: originalname });
-  
-      // Get the Cloudflare URL of the uploaded file
-      const cloudflareUrl = uploadResponse.url;
-  
-      // Generate a QR code SVG from the Cloudflare URL
-      const qrSvg = qr.imageSync(cloudflareUrl, { type: 'svg' });
-  
-      // Send the QR code SVG to the user as a response
-      res.set('Content-Type', 'image/svg+xml');
-      res.send(qrSvg);
-    } catch (error) {
-      console.error(error);
-      res.status(500).send('Internal Server Error');
-    }
+    try {
+        if (!req.file) {
+          return res.status(400).json({ message: 'No file uploaded.' });
+        }
+    
+        const { originalname, buffer } = req.file;
+        // console.log(req.file)
+        
+        // Upload the file to Amazon S3
+        const params = {
+          Bucket: 'snapurl',
+          Key: originalname,
+          Body: buffer,
+        };
+    
+        const url = await s3.upload(params).promise();
+        // console.log(url)
+    
+        // Generate the QR code
+        const param = {
+          Bucket: 'snapurl',
+          Key: originalname,
+        };
+    
+        const signedUrl = s3.getSignedUrl('getObject', param);
+      //  console.log(signedUrl)
+        // Generate the QR code for the signed URL
+        const qr = new QRCode(signedUrl);
+    
+        // Send the QR code as an SVG response
+        res.type('svg');
+        res.send(qr.svg());
+      } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Internal Server Error' });
+      }
   
 }
 
