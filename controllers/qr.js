@@ -18,6 +18,13 @@ async function handleQRGenerator(req, res) {
     case "Url":
       qrText = content;
       break;
+    case "Image":
+      qrText = content;
+      break;
+    case "PDF":
+    qrText = content;
+      break;
+      break;
     case "Wifi":
       const { ssid, password, isHidden } = content;
       // console.log(content,ssid,password,isHidden)
