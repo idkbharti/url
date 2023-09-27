@@ -6,7 +6,7 @@ const cors = require("cors");
 const bodyParser = require("body-parser");
 const QRCode = require("qrcode-svg");
 const qrRoute = require("./routes/qr");
-const userRoute = require ("/routes/user")
+const userRoute = require ("./routes/user")
 const s3 = require("./utils/aws-config");
 
 require("dotenv").config();
@@ -23,6 +23,6 @@ const PORT = process.env.PORT || 8003;
 
 app.use("/url", urlRoute);
 app.use("/qr", qrRoute);
-app.use("/user",user)
+app.use("/user",userRoute)
 
 app.listen(PORT, () => console.log(`server running on port ${PORT}`));

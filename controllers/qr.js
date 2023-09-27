@@ -1,5 +1,5 @@
 const QRCode = require("qrcode-svg");
-const s3 = require("../aws-config");
+const s3 = require("../utils/aws-config");
 
 async function handleQRGenerator(req, res) {
   const { type, content } = req.body;

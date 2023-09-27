@@ -9,6 +9,4 @@ const router = express.Router()
 router.post("/",handleQRGenerator)
 router.post("/upload",upload.single('file'),handleUploadqrGenerator)
 
-
-
 module.exports=router;
