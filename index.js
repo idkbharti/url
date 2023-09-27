@@ -1,12 +1,13 @@
 const express = require("express");
-const { connectToDb } = require("./connect");
-const urlRoute = require("./routes/urlRoutes");
-const URL = require("./models/urlSchema");
+const { connectToDb } = require("./utils/connect");
+const urlRoute = require("./routes/url");
+const URL = require("./models/url");
 const cors = require("cors");
 const bodyParser = require("body-parser");
 const QRCode = require("qrcode-svg");
-const qrRoute = require("./routes/qrRoutes");
-const s3 = require("./aws-config");
+const qrRoute = require("./routes/qr");
+const userRoute = require ("/routes/user")
+const s3 = require("./utils/aws-config");
 
 require("dotenv").config();
 connectToDb(process.env.DB_URL).then(() =>
@@ -22,5 +23,6 @@ const PORT = process.env.PORT || 8003;
 
 app.use("/url", urlRoute);
 app.use("/qr", qrRoute);
+app.use("/user",user)
 
 app.listen(PORT, () => console.log(`server running on port ${PORT}`));

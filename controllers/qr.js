@@ -52,7 +52,7 @@ async function handleUploadqrGenerator(req, res) {
     }
 
     const { originalname, buffer } = req.file;
-    // console.log(req.file)
+    console.log(req.file)
 
     // Upload the file to Amazon S3
     const params = {
@@ -71,7 +71,7 @@ async function handleUploadqrGenerator(req, res) {
     };
 
     const signedUrl = s3.getSignedUrl("getObject", param);
-    //  console.log(signedUrl)
+     console.log(signedUrl)
     // Generate the QR code for the signed URL
     const qr = new QRCode(signedUrl);
 
